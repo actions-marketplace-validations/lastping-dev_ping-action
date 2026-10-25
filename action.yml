@@ -1,0 +1,35 @@
+name: LastPing ping
+description: Report a CI job's start and outcome to a LastPing monitor, so a failed, hung or missing run raises an alert.
+author: LastPing
+branding:
+  icon: activity
+  color: green
+
+inputs:
+  ping-url:
+    description: The monitor's ping URL, for example https://ping.lastping.dev/<monitor-id>. Store it as a secret.
+    required: true
+  status:
+    description: start, success, failure, cancelled, log, or an exit code 0-255. Pass job.status in the final step.
+    required: false
+    default: success
+  body:
+    description: Optional text stored with the ping, such as a failure message. Cut to 10,000 bytes.
+    required: false
+    default: ''
+  run-id:
+    description: Pairs the start ping with its finish so LastPing records the run's duration. Sent as rid.
+    required: false
+    default: ${{ github.run_id }}-${{ github.run_attempt }}
+  on-cancelled:
+    description: What a cancelled job sends. fail (the default) alerts; log attaches a note only; skip sends nothing.
+    required: false
+    default: fail
+  fail-on-error:
+    description: Fail this step when the ping cannot be delivered. By default a ping problem only logs a warning.
+    required: false
+    default: 'false'
+
+runs:
+  using: node24
+  main: index.js
